@@ -1,4 +1,4 @@
-set(APP_NAME hello_window)
+set(APP_NAME hello_triangle)
 
 add_executable(${APP_NAME} ${APP_NAME}.cpp)
 
