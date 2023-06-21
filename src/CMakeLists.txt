@@ -1,9 +1,13 @@
-set(APP_NAME hello_triangle)
+set(SOURCES hello_window.cpp hello_triangle.cpp)
 
-add_executable(${APP_NAME} ${APP_NAME}.cpp)
+foreach(source ${SOURCES})
+  get_filename_component(name ${source} NAME_WE)
 
-target_link_libraries(
-  ${APP_NAME}
-  glfw
-  glad
-)
+  add_executable(${name} ${source})
+
+  target_link_libraries(
+    ${name}
+    glfw
+    glad
+  )
+endforeach()
