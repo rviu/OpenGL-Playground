@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,8 +14,9 @@ const char* vertex_shader_source =
 const char* fragment_shader_source =
   "#version 330 core\n"
   "out vec4 frag_color;\n"
+  "uniform vec4 my_color;\n"
   "void main() {\n"
-  "frag_color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+  "frag_color = my_color;\n"
   "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -87,15 +89,13 @@ int main() {
   glDeleteShader(fragment_shader);
 
   float vertices[] = {
-     0.5f,  0.5f, 0.0f, // top right
+     0.0f,  0.5f, 0.0f, // top
      0.5f, -0.5f, 0.0f, // bottom right
     -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f  // top left
   };
 
   unsigned int indices[] = {
-    0, 1, 3,
-    1, 2, 3
+    0, 1, 2
   };
 
   unsigned int VBO, VAO, EBO;
@@ -126,10 +126,16 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shader_program);
+
+    float time_value = glfwGetTime();
+    float green_value = std::sin(time_value) / 2.0f + 0.5f;
+    int vertex_color_location = glGetUniformLocation(shader_program, "my_color");
+    glUniform4f(vertex_color_location, 0.0f, green_value, 0.0f, 1.0f);
+
     glBindVertexArray(VAO);
 
     // glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 
     glfwSwapBuffers(window);
