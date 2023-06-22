@@ -38,4 +38,17 @@ target_include_directories(
   external/glad/include
 )
 
+# stb_image
+add_library(
+  stb_image
+  STATIC
+  external/stb_image/stb_image.c
+)
+
+target_include_directories(
+  stb_image
+  PUBLIC
+  external/stb_image
+)
+
 add_subdirectory(src)

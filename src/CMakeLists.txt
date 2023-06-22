@@ -9,5 +9,6 @@ foreach(source ${SOURCES})
     ${name}
     glfw
     glad
+    stb_image
   )
 endforeach()
