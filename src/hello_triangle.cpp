@@ -7,16 +7,19 @@
 const char* vertex_shader_source =
   "#version 330 core\n"
   "layout (location = 0) in vec3 a_pos;\n"
+  "layout (location = 1) in vec3 a_color;\n"
+  "out vec3 my_color;\n"
   "void main() {\n"
-  "  gl_Position = vec4(a_pos.x, a_pos.y, a_pos.z, 1.0);\n"
+  "  gl_Position = vec4(a_pos, 1.0);\n"
+  "  my_color = a_color;\n"
   "}\0";
 
 const char* fragment_shader_source =
   "#version 330 core\n"
+  "in vec3 my_color;\n"
   "out vec4 frag_color;\n"
-  "uniform vec4 my_color;\n"
   "void main() {\n"
-  "frag_color = my_color;\n"
+  "frag_color = vec4(my_color, 1.0);\n"
   "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -89,9 +92,9 @@ int main() {
   glDeleteShader(fragment_shader);
 
   float vertices[] = {
-     0.0f,  0.5f, 0.0f, // top
-     0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
+    0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+   -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
   };
 
   unsigned int indices[] = {
@@ -111,8 +114,11 @@ int main() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
