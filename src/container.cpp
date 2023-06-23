@@ -139,8 +139,7 @@ int main() {
 
     shader.use();
 
-    unsigned int transform_loc = glGetUniformLocation(shader.ID, "transform");
-    glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
+    shader.set_uniform_mat4("transform", transform);
 
     glBindVertexArray(VAO);
 
