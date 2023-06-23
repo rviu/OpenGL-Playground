@@ -7,8 +7,9 @@ foreach(source ${SOURCES})
 
   target_link_libraries(
     ${name}
-    glfw
-    glad
-    stb_image
+    PUBLIC glfw
+    PUBLIC glad
+    PUBLIC stb_image
+    PRIVATE glm
   )
 endforeach()

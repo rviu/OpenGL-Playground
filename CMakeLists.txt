@@ -51,4 +51,16 @@ target_include_directories(
   external/stb_image
 )
 
+# GLM
+add_library(
+  glm
+  INTERFACE
+)
+
+target_include_directories(
+  glm
+  INTERFACE
+  external/glm
+)
+
 add_subdirectory(src)
