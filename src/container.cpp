@@ -1,33 +1,29 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "camera.hpp"
 #include "shader.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double x_pos, double y_pos);
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset);
-void processInput(GLFWwindow* window);
+void process_input(GLFWwindow* window);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
-
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool first_mouse = true;
-float yaw = -90.0f;
-float pitch = 0.0f;
-float last_x = SCR_WIDTH / 2.0;
-float last_y = SCR_HEIGHT / 2.0;
-float fov = 45.0f;
+float last_x = SCR_WIDTH / 2.0f;
+float last_y = SCR_HEIGHT / 2.0f;
 
 float delta_time = 0.0f;
 float last_frame_time = 0.0f;
@@ -38,7 +34,8 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Awesome container", NULL, NULL);
+  GLFWwindow* window =
+      glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Awesome container", NULL, NULL);
 
   if (!window) {
     std::cout << "Failed to create GLFW window\n";
@@ -122,28 +119,20 @@ int main() {
     glm::vec3(-1.3f,  1.0f, -1.5f)
   };
 
-  unsigned int indices[] = {
-    0, 1, 3,
-    1, 2, 3
-  };
-
-  unsigned int VBO, VAO, EBO;
+  unsigned int VBO, VAO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
 
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                        (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   unsigned int texture1, texture2;
@@ -153,17 +142,20 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   // Texture
   stbi_set_flip_vertically_on_load(true);
 
   int width, height, n_channels;
-  unsigned char* data = stbi_load("data/container.jpg", &width, &height, &n_channels, 0);
+  unsigned char* data =
+      stbi_load("data/container.jpg", &width, &height, &n_channels, 0);
 
   if (data) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
   } else {
     std::cerr << "Failed to load texture\n";
@@ -177,13 +169,15 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   data = stbi_load("data/awesomeface.png", &width, &height, &n_channels, 0);
 
   if (data) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
   } else {
     std::cerr << "Failed to load texture\n";
@@ -200,7 +194,7 @@ int main() {
     delta_time = current_frame_time - last_frame_time;
     last_frame_time = current_frame_time;
 
-    processInput(window);
+    process_input(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,10 +207,12 @@ int main() {
 
     shader.use();
 
-    glm::mat4 view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
+    glm::mat4 view = camera.get_view_matrix();
     shader.set_uniform_mat4("view", view);
 
-    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection =
+        glm::perspective(glm::radians(camera.zoom),
+                         (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     shader.set_uniform_mat4("projection", projection);
 
     glBindVertexArray(VAO);
@@ -224,9 +220,10 @@ int main() {
     for (unsigned int i = 0; i < 10; i++) {
       glm::mat4 model = glm::mat4(1.0f);
       model = glm::translate(model, cube_positions[i]);
-      
+
       float angle = 20.0f * (i + 1) * glfwGetTime();
-      model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+      model =
+          glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
       shader.set_uniform_mat4("model", model);
 
@@ -242,7 +239,6 @@ int main() {
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
   shader.delete_program();
 
   glfwTerminate();
@@ -266,66 +262,35 @@ void mouse_callback(GLFWwindow* window, double x_pos_in, double y_pos_in) {
   }
 
   float x_offset = x_pos - last_x;
-  float y_offset = y_pos - last_y;
+  float y_offset = last_y - y_pos;
   last_x = x_pos;
   last_y = y_pos;
 
-  float sensitivity = 0.1f;
-  x_offset *= sensitivity;
-  y_offset *= sensitivity;
-
-  yaw += x_offset;
-  pitch -= y_offset;
-
-  if (pitch > 89.0f) {
-    pitch = 89.0f;
-  }
-
-  if (pitch < -89.0f) {
-    pitch = -89.0f;
-  }
-
-  glm::vec3 new_front_direction;
-
-  new_front_direction.x = std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-  new_front_direction.y = std::sin(glm::radians(pitch));
-  new_front_direction.z = std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch));
-
-  camera_front = glm::normalize(new_front_direction);
+  camera.process_mouse_movement(x_offset, y_offset);
 }
 
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset) {
-  fov -= (float)y_offset;
-
-  if (fov < 1.0f) {
-    fov = 1.0f;
-  }
-
-  if (fov > 45.0f) {
-    fov = 45.0f;
-  }
+  camera.process_mouse_scroll(static_cast<float>(y_offset));
 }
 
-void processInput(GLFWwindow* window) {
+void process_input(GLFWwindow* window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
 
-  float camera_speed = static_cast<float>(2.5 * delta_time);
-
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    camera_pos += camera_speed * camera_front;
+    camera.process_keyboard(FORWARD, delta_time);
   }
 
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    camera_pos -= camera_speed * camera_front;
+    camera.process_keyboard(BACKWARD, delta_time);
   }
 
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    camera_pos -= camera_speed * glm::normalize(glm::cross(camera_front, camera_up));
+    camera.process_keyboard(LEFT, delta_time);
   }
 
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    camera_pos += camera_speed * glm::normalize(glm::cross(camera_front, camera_up));
+    camera.process_keyboard(RIGHT, delta_time);
   }
 }
