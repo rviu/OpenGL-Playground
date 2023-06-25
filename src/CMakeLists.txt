@@ -1,4 +1,4 @@
-set(SOURCES hello_window.cpp hello_triangle.cpp container.cpp)
+set(SOURCES hello_window.cpp hello_triangle.cpp container.cpp lighting.cpp)
 
 foreach(source ${SOURCES})
   get_filename_component(name ${source} NAME_WE)
