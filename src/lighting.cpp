@@ -71,12 +71,12 @@ int main() {
     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
@@ -138,14 +138,25 @@ int main() {
 
     process_input(window);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     object_shader.use();
-    object_shader.set_uniform_vec3("object_color", 1.0f, 0.5f, 0.31f);
-    object_shader.set_uniform_vec3("light_color", 1.0f, 1.0f, 1.0f);
-    object_shader.set_uniform_vec3("light_pos", light_pos);
+    object_shader.set_uniform_vec3("light.position", light_pos);
     object_shader.set_uniform_vec3("view_pos", camera.position);
+
+    glm::vec3 light_color(1.0f, 1.0f, 1.0f);
+    glm::vec3 diffuse_color = light_color * glm::vec3(0.5f);
+    glm::vec3 ambient_color = diffuse_color * glm::vec3(0.2f);
+
+    object_shader.set_uniform_vec3("light.ambient", ambient_color);
+    object_shader.set_uniform_vec3("light.diffuse", diffuse_color);
+    object_shader.set_uniform_vec3("light.specular", light_color);
+
+    object_shader.set_uniform_vec3("material.ambient", 1.0f, 0.5f, 0.31f);
+    object_shader.set_uniform_vec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+    object_shader.set_uniform_vec3("material.specular", 0.5f, 0.5f, 0.5f);
+    object_shader.set_uniform_float("material.shininess", 32.0f);
 
     glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     glm::mat4 view = camera.get_view_matrix();
