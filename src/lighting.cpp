@@ -28,6 +28,8 @@ float last_y = SCR_HEIGHT / 2.0f;
 float delta_time = 0.0f;
 float last_frame_time = 0.0f;
 
+glm::vec3 light_pos(1.2f, 1.0f, 2.0f);
+
 int main() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -171,6 +173,9 @@ int main() {
     object_shader.set_uniform_vec3("light.ambient", 0.2f, 0.2f, 0.2f);
     object_shader.set_uniform_vec3("light.diffuse", 0.5f, 0.5f, 0.5f);
     object_shader.set_uniform_vec3("light.specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("light.constant", 1.0f);
+    object_shader.set_uniform_float("light.linear", 0.09f);
+    object_shader.set_uniform_float("light.quadratic", 0.032f);
 
     object_shader.set_uniform_float("material.shininess", 32.0f);
 
@@ -199,16 +204,16 @@ int main() {
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    // light_source_shader.use();
-    // light_source_shader.set_uniform_mat4("projection", projection);
-    // light_source_shader.set_uniform_mat4("view", view);
-    // model = glm::mat4(1.0f);
-    // model = glm::translate(model, light_pos);
-    // model = glm::scale(model, glm::vec3(0.2f));
-    // light_source_shader.set_uniform_mat4("model", model);
+    light_source_shader.use();
+    light_source_shader.set_uniform_mat4("projection", projection);
+    light_source_shader.set_uniform_mat4("view", view);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, light_pos);
+    model = glm::scale(model, glm::vec3(0.2f));
+    light_source_shader.set_uniform_mat4("model", model);
 
-    // glBindVertexArray(light_source_VAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(light_source_VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
