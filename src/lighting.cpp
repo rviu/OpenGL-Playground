@@ -122,6 +122,13 @@ int main() {
     glm::vec3(-1.3f,  1.0f, -1.5f)
   };
 
+  glm::vec3 point_light_positions[] = {
+    glm::vec3( 0.7f,  0.2f,  2.0f),
+    glm::vec3( 2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f,  2.0f, -12.0f),
+    glm::vec3( 0.0f,  0.0f, -3.0f)
+  };
+
   unsigned int VBO, object_VAO;
   glGenVertexArrays(1, &object_VAO);
   glGenBuffers(1, &VBO);
@@ -167,20 +174,59 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     object_shader.use();
-    object_shader.set_uniform_vec3("light.position", camera.position);
-    object_shader.set_uniform_vec3("light.direction", camera.front);
-    object_shader.set_uniform_float("light.cut_off", glm::cos(glm::radians(12.5f)));
-    object_shader.set_uniform_float("light.outer_cut_off", glm::cos(glm::radians(17.5f)));
     object_shader.set_uniform_vec3("view_pos", camera.position);
-
-    object_shader.set_uniform_vec3("light.ambient", 0.2f, 0.2f, 0.2f);
-    object_shader.set_uniform_vec3("light.diffuse", 0.8f, 0.8f, 0.8f);
-    object_shader.set_uniform_vec3("light.specular", 1.0f, 1.0f, 1.0f);
-    object_shader.set_uniform_float("light.constant", 1.0f);
-    object_shader.set_uniform_float("light.linear", 0.09f);
-    object_shader.set_uniform_float("light.quadratic", 0.032f);
-
     object_shader.set_uniform_float("material.shininess", 32.0f);
+
+    // Directional Light
+    object_shader.set_uniform_vec3("dir_light.direction", -0.2f, -1.0f, -0.3f);
+    object_shader.set_uniform_vec3("dir_light.ambient", 0.05f, 0.05f, 0.05f);
+    object_shader.set_uniform_vec3("dir_light.diffuse", 0.4f, 0.4f, 0.4f);
+    object_shader.set_uniform_vec3("dir_light.specular", 0.5f, 0.5f, 0.5f);
+
+    // Point Lights
+    object_shader.set_uniform_vec3("point_lights[0].position", point_light_positions[0]);
+    object_shader.set_uniform_vec3("point_lights[0].ambient", 0.05f, 0.05f, 0.05f);
+    object_shader.set_uniform_vec3("point_lights[0].diffuse", 0.8f, 0.8f, 0.8f);
+    object_shader.set_uniform_vec3("point_lights[0].specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("point_lights[0].constant", 1.0f);
+    object_shader.set_uniform_float("point_lights[0].linear", 0.09f);
+    object_shader.set_uniform_float("point_lights[0].quadratic", 0.032f);
+
+    object_shader.set_uniform_vec3("point_lights[1].position", point_light_positions[1]);
+    object_shader.set_uniform_vec3("point_lights[1].ambient", 0.05f, 0.05f, 0.05f);
+    object_shader.set_uniform_vec3("point_lights[1].diffuse", 0.8f, 0.8f, 0.8f);
+    object_shader.set_uniform_vec3("point_lights[1].specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("point_lights[1].constant", 1.0f);
+    object_shader.set_uniform_float("point_lights[1].linear", 0.09f);
+    object_shader.set_uniform_float("point_lights[1].quadratic", 0.032f);
+
+    object_shader.set_uniform_vec3("point_lights[2].position", point_light_positions[2]);
+    object_shader.set_uniform_vec3("point_lights[2].ambient", 0.05f, 0.05f, 0.05f);
+    object_shader.set_uniform_vec3("point_lights[2].diffuse", 0.8f, 0.8f, 0.8f);
+    object_shader.set_uniform_vec3("point_lights[2].specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("point_lights[2].constant", 1.0f);
+    object_shader.set_uniform_float("point_lights[2].linear", 0.09f);
+    object_shader.set_uniform_float("point_lights[2].quadratic", 0.032f);
+
+    object_shader.set_uniform_vec3("point_lights[3].position", point_light_positions[3]);
+    object_shader.set_uniform_vec3("point_lights[3].ambient", 0.05f, 0.05f, 0.05f);
+    object_shader.set_uniform_vec3("point_lights[3].diffuse", 0.8f, 0.8f, 0.8f);
+    object_shader.set_uniform_vec3("point_lights[3].specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("point_lights[3].constant", 1.0f);
+    object_shader.set_uniform_float("point_lights[3].linear", 0.09f);
+    object_shader.set_uniform_float("point_lights[3].quadratic", 0.032f);
+
+    // Spot Light
+    object_shader.set_uniform_vec3("spot_light.position", camera.position);
+    object_shader.set_uniform_vec3("spot_light.direction", camera.front);
+    object_shader.set_uniform_vec3("spot_light.ambient", 0.0f, 0.0f, 0.0f);
+    object_shader.set_uniform_vec3("spot_light.diffuse", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_vec3("spot_light.specular", 1.0f, 1.0f, 1.0f);
+    object_shader.set_uniform_float("spot_light.constant", 1.0f);
+    object_shader.set_uniform_float("spot_light.linear", 0.09f);
+    object_shader.set_uniform_float("spot_light.quadratic", 0.032f);
+    object_shader.set_uniform_float("spot_light.cut_off", glm::cos(glm::radians(12.5f)));
+    object_shader.set_uniform_float("spot_light.outer_cut_off", glm::cos(glm::radians(15.0f)));
 
     glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     glm::mat4 view = camera.get_view_matrix();
@@ -207,17 +253,22 @@ int main() {
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    // light_source_shader.use();
-    // light_source_shader.set_uniform_mat4("projection", projection);
-    // light_source_shader.set_uniform_mat4("view", view);
-    // model = glm::mat4(1.0f);
-    // model = glm::translate(model, light_pos);
-    // model = glm::scale(model, glm::vec3(0.2f));
-    // light_source_shader.set_uniform_mat4("model", model);
+    light_source_shader.use();
+    light_source_shader.set_uniform_mat4("projection", projection);
+    light_source_shader.set_uniform_mat4("view", view);
 
-    // glBindVertexArray(light_source_VAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(light_source_VAO);
 
+    for (unsigned int i = 0; i < 4; i++) {
+      model = glm::mat4(1.0f);
+      model = glm::translate(model, point_light_positions[i]);
+      model = glm::scale(model, glm::vec3(0.2f));
+
+      light_source_shader.set_uniform_mat4("model", model);
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+    
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
