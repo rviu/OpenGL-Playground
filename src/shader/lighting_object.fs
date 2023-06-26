@@ -14,6 +14,9 @@ struct Material {
 
 struct Light {
   vec3 position;
+  vec3 direction;
+  float cut_off;
+  float outer_cut_off;
 
   vec3 ambient;
   vec3 diffuse;
@@ -41,6 +44,12 @@ void main() {
   vec3 reflect_dir = reflect(-light_dir, norm);
   float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
   vec3 specular = light.specular * spec * texture(material.specular, tex_coords).rgb;
+
+  float theta = dot(light_dir, normalize(-light.direction));
+  float epsilon = (light.cut_off - light.outer_cut_off);
+  float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
+  diffuse *= intensity;
+  specular *= intensity;
 
   float distance = length(light.position - frag_pos);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
