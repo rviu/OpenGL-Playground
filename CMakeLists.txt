@@ -63,4 +63,11 @@ target_include_directories(
   external/glm
 )
 
+# assimp
+option(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+option(ASSIMP_BUILD_SAMPLES OFF)
+option(ASSIMP_BUILD_TESTS OFF)
+
+add_subdirectory(external/assimp)
+
 add_subdirectory(src)

@@ -11,5 +11,6 @@ foreach(source ${SOURCES})
     PUBLIC glad
     PUBLIC stb_image
     PRIVATE glm
+    PUBLIC assimp
   )
 endforeach()
