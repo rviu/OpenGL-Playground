@@ -40,13 +40,13 @@ git clone https://github.com/rviu/OpenGL-Playground
 2. Initialise and update the submodules
 
 ```shell
+cd OpenGL-Playground
 git submodule update --init --recursive
 ```
 
 3. Configure and build
 
 ```shell
-cd OpenGL-Playground
 ./configure_and_build.sh
 ```
 
